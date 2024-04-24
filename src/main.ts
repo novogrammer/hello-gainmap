@@ -10,6 +10,8 @@ appElement.innerHTML = `
   <img id="output" alt="">
 `;
 
+const BOOST_FACTOR=10;
+
 
 async function mainAsync(){
   const canvas = document.querySelector<HTMLCanvasElement>("#view")!;
@@ -34,6 +36,7 @@ async function mainAsync(){
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     const material = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
     const cube = new THREE.Mesh( geometry, material );
+    cube.name="cube";
     scene.add( cube );
     cube.lookAt(new THREE.Vector3(1,1,1));
   }
@@ -46,10 +49,15 @@ async function mainAsync(){
   c.height=canvas.height;
   const ctx = c.getContext("2d")!;
   let count=0;
-  function render(_time: DOMHighResTimeStamp, _frame: XRFrame){
+  function render(time: DOMHighResTimeStamp, _frame: XRFrame){
     count+=1;
-    if(2<count){
-      return;
+    // if(2<count){
+    //   return;
+    // }
+    const cube=scene.getObjectByName("cube");
+    if(cube){
+      cube.rotation.x=time;
+      cube.rotation.y=time;
     }
 
     renderer.render(scene,camera);
@@ -61,11 +69,10 @@ async function mainAsync(){
       const imageData=ctx.getImageData(0,0,c.width,c.height);
       // console.log(imageData.data);
       const hdrData=new Float32Array(imageData.data.length);
-      const boostFactor=10;
       for(let i=0;i<imageData.data.length;i+=4){
-        hdrData[i+0]=imageData.data[i+0]/255*boostFactor;
-        hdrData[i+1]=imageData.data[i+1]/255*boostFactor;
-        hdrData[i+2]=imageData.data[i+2]/255*boostFactor;
+        hdrData[i+0]=imageData.data[i+0]/255*BOOST_FACTOR;
+        hdrData[i+1]=imageData.data[i+1]/255*BOOST_FACTOR;
+        hdrData[i+2]=imageData.data[i+2]/255*BOOST_FACTOR;
         hdrData[i+3]=imageData.data[i+3]/255;
       }
       // console.log(hdrData);
