@@ -61,7 +61,7 @@ async function mainAsync(){
       const imageData=ctx.getImageData(0,0,c.width,c.height);
       // console.log(imageData.data);
       const hdrData=new Float32Array(imageData.data.length);
-      const boostFactor=3;
+      const boostFactor=10;
       for(let i=0;i<imageData.data.length;i+=4){
         hdrData[i+0]=imageData.data[i+0]/255*boostFactor;
         hdrData[i+1]=imageData.data[i+1]/255*boostFactor;
