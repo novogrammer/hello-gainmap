@@ -23,5 +23,7 @@ body {
 #output {
   position:absolute;
   left:0;
-  top:100vh;
+  top:0;
+  width:50vw;
+  height:auto;
 }
