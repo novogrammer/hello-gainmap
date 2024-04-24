@@ -79,7 +79,7 @@ async function mainAsync(){
         renderer,
         image:dataTexture,
         // this will encode the full HDR range
-        maxContentBoost: 1,
+        maxContentBoost: Math.max.apply(null,textureMax),
         mimeType: 'image/jpeg'
       }).then((encodingResult)=>{
         let imageUrl:string|null=null;
