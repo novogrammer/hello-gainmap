@@ -22,6 +22,7 @@ async function mainAsync(){
     preserveDrawingBuffer:true,
     // alpha: true,
   });
+  renderer.setPixelRatio(0.25);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene = new THREE.Scene();
@@ -80,27 +81,28 @@ async function mainAsync(){
       const dataTexture=new THREE.DataTexture(hdrData,c.width,c.height,THREE.RGBAFormat,THREE.FloatType);
       // console.log(dataTexture);
 
-      const textureMax = findTextureMinMax(dataTexture);
+      const textureMax = findTextureMinMax(dataTexture,"max",renderer);
       // console.log(textureMax);
       encodeAndCompress({
         renderer,
         image:dataTexture,
         // this will encode the full HDR range
         maxContentBoost: Math.max.apply(null,textureMax),
-        mimeType: 'image/jpeg'
+        mimeType: 'image/jpeg',
       }).then((encodingResult)=>{
-        let imageUrl:string|null=null;
         encodeJPEGMetadata({
           ...encodingResult,
           sdr: encodingResult.sdr,
-          gainMap: encodingResult.gainMap
+          gainMap: encodingResult.gainMap,
         }).then((jpeg)=>{
           dataTexture.dispose();
-          const blob = new Blob([jpeg], { type: 'image/jpeg' });
-          if(imageUrl){
-            URL.revokeObjectURL(imageUrl);
+          var binary = "";
+          for (var i = 0; i < jpeg.length; i++){
+            binary += String.fromCharCode(jpeg[i]);
           }
-          imageUrl = URL.createObjectURL(blob);
+          var base64 = window.btoa(binary);
+          const mime="image/jpeg";
+          const imageUrl = 'data:' + mime + ';base64,' + base64;
           output.src=imageUrl;
   
         });
